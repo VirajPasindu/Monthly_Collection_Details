@@ -13,7 +13,7 @@ namespace Monthly_Collection_Details.Services
         {
             _connectionString = configuration.GetConnectionString("LargestCustomers");
             _connectionString2 = configuration.GetConnectionString("POS");
-            _connectionString3 = configuration.GetConnectionString("JDBC");
+            _connectionString3 = configuration.GetConnectionString("SECOND_DB");
         }
 
         // ── DB1: POST - Get return_cheques by acct_number ────────────────
@@ -65,7 +65,7 @@ namespace Monthly_Collection_Details.Services
             {
                 await conn.OpenAsync();
 
-                string query = @"SELECT pay_mode, acno_pivno, trans_date, center, count_no,
+                string query = @"SELECT FIRST 50 pay_mode, acno_pivno, trans_date, center, count_no,
                                         stub_no, trans_amt, chq_mny_no, bnk_post_code, bran_code
                                  FROM chq_mnyord";
 
@@ -264,6 +264,26 @@ namespace Monthly_Collection_Details.Services
             }
 
             return results;
+        }
+
+        // ── DB2: DELETE - Delete cheqmy_details by acct_number ───────────────
+        public async Task<int> DeleteCheqmyDetailByAccountAsync(string acctNumber)
+        {
+            using (var conn = new IfxConnection(_connectionString2))
+            {
+                await conn.OpenAsync();
+
+                string query = @"DELETE FROM cheqmy_details
+                         WHERE acct_number = ?";
+
+                using (var cmd = new IfxCommand(query, conn))
+                {
+                    cmd.Parameters.Add(new IfxParameter("acct_number", IfxType.VarChar)).Value = acctNumber;
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    return rowsAffected;
+                }
+            }
         }
     }
 }

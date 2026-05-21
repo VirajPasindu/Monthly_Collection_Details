@@ -98,4 +98,10 @@
         public string Sp { get; set; }
         public string Uva { get; set; }
     }
+
+    // ── cheqmy_details Delete Request ────────────────────────────────────
+    public class CheqmyDetailDeleteRequest
+    {
+        public string AcctNumber { get; set; }
+    }
 }

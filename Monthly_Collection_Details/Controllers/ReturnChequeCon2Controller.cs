@@ -90,6 +90,26 @@ namespace Monthly_Collection_Details.Controllers
 
             return Ok(data);
         }
+
+        // ── DELETE: api/ReturnChequeCon2/DeleteCheqmyDetail ──────────────────
+        [HttpDelete("DeleteCheqmyDetail")]
+        public async Task<IActionResult> DeleteCheqmyDetail([FromBody] CheqmyDetailDeleteRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request?.AcctNumber))
+                return BadRequest(new { message = "Account number is required." });
+
+            int rowsAffected = await _service2.DeleteCheqmyDetailByAccountAsync(request.AcctNumber);
+
+            if (rowsAffected == 0)
+                return NotFound(new { message = "No records found for the given account number." });
+
+            return Ok(new
+            {
+                message = "Record deleted successfully.",
+                acctNumber = request.AcctNumber,
+                rowsDeleted = rowsAffected
+            });
+        }
     }
 }
     
